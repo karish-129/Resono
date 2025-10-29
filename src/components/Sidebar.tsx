@@ -29,7 +29,7 @@ export default function Sidebar() {
             <Bell className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-sidebar-foreground">NoticeBoard</h1>
+            <h1 className="text-lg font-semibold text-sidebar-foreground">Resona</h1>
             <p className="text-xs text-sidebar-foreground/60">Smart AI Assistant</p>
           </div>
         </div>

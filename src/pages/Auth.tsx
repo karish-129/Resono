@@ -33,7 +33,7 @@ export default function Auth() {
           <div className="w-16 h-16 rounded-lg bg-gradient-primary flex items-center justify-center mx-auto mb-4">
             <Bell className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Resono</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">NoticeBoard</h1>
           <p className="text-muted-foreground">Smart AI-Powered Announcements</p>
         </div>
 

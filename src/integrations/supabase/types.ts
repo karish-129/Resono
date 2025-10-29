@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       announcements: {
         Row: {
+          attachments: Json | null
           category: string
           content: string
           created_at: string | null
@@ -29,6 +30,7 @@ export type Database = {
           views: number | null
         }
         Insert: {
+          attachments?: Json | null
           category: string
           content: string
           created_at?: string | null
@@ -42,6 +44,7 @@ export type Database = {
           views?: number | null
         }
         Update: {
+          attachments?: Json | null
           category?: string
           content?: string
           created_at?: string | null

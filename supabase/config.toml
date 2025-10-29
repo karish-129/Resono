@@ -1,1 +1,4 @@
 project_id = "bwowiclyjxsccovrkplt"
+
+[functions.analyze-announcement]
+verify_jwt = false
