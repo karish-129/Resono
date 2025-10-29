@@ -189,10 +189,10 @@ export default function CreateAnnouncement() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!aiSummary || !aiCategory) {
+    if (!aiCategory) {
       toast({
         title: "Missing Information",
-        description: "Please generate AI insights before publishing.",
+        description: "Please enter a category before publishing.",
         variant: "destructive",
       });
       return;
@@ -206,7 +206,7 @@ export default function CreateAnnouncement() {
         title,
         content,
         department,
-        summary: aiSummary,
+        summary: aiSummary || content.substring(0, 150) + "...",
         category: aiCategory,
         priority: aiPriority,
         attachments,
@@ -269,6 +269,30 @@ export default function CreateAnnouncement() {
                       <SelectItem value="hr">Human Resources</SelectItem>
                       <SelectItem value="operations">Operations</SelectItem>
                       <SelectItem value="it">IT</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Input
+                    id="category"
+                    placeholder="Enter category or use AI to generate"
+                    value={aiCategory}
+                    onChange={(e) => setAiCategory(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select value={aiPriority} onValueChange={(value: "high" | "medium" | "low") => setAiPriority(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -371,14 +395,14 @@ export default function CreateAnnouncement() {
                     </div>
 
                     <div>
-                      <Label className="text-xs text-muted-foreground">Category</Label>
+                      <Label className="text-xs text-muted-foreground">Current Category</Label>
                       <Badge className="mt-1" variant="secondary">
-                        {aiCategory}
+                        {aiCategory || "Not set"}
                       </Badge>
                     </div>
 
                     <div>
-                      <Label className="text-xs text-muted-foreground">Priority</Label>
+                      <Label className="text-xs text-muted-foreground">Current Priority</Label>
                       <Badge
                         className="mt-1"
                         variant={
@@ -392,10 +416,13 @@ export default function CreateAnnouncement() {
                         {aiPriority.charAt(0).toUpperCase() + aiPriority.slice(1)}
                       </Badge>
                     </div>
+                    <p className="text-xs text-muted-foreground italic">
+                      You can edit category and priority in the form
+                    </p>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    Generate AI insights to see automatic categorization and summary
+                    Generate AI insights for automatic categorization, or manually enter category and priority
                   </p>
                 )}
               </div>
