@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Calendar, Tag, TrendingUp, Building2, Sparkles } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, TrendingUp, Building2, Sparkles, FileText, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const priorityConfig = {
@@ -128,6 +128,35 @@ export default function AnnouncementDetail() {
                   {announcement.content}
                 </div>
               </div>
+
+              {announcement.attachments && Array.isArray(announcement.attachments) && announcement.attachments.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Attachments
+                  </h3>
+                  <div className="space-y-2">
+                    {announcement.attachments.map((file: any, index: number) => (
+                      <a
+                        key={index}
+                        href={file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-muted hover:bg-muted/80 rounded-lg transition-colors group"
+                      >
+                        <FileText className="w-5 h-5 text-muted-foreground" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(file.size / 1024).toFixed(1)} KB
+                          </p>
+                        </div>
+                        <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="pt-6 border-t border-border">
                 <p className="text-sm text-muted-foreground">
