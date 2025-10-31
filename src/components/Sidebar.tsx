@@ -1,25 +1,37 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Plus, Settings, BarChart3, Bell, LogOut } from "lucide-react";
+import { Home, Plus, Settings, BarChart3, Bell, LogOut, User, Archive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useRole } from "@/hooks/useRole";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-const navigation = [
-  { name: "Dashboard", href: "/", icon: Home },
-  { name: "Create", href: "/create", icon: Plus },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
-];
+import { Badge } from "@/components/ui/badge";
 
 export default function Sidebar() {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { role } = useRole();
+
+  const navigation = [
+    { name: "Dashboard", href: "/", icon: Home },
+    { name: "Create", href: "/create", icon: Plus, adminOnly: true },
+    { name: "Analytics", href: "/analytics", icon: BarChart3 },
+    { name: "Archived", href: "/archived", icon: Archive },
+    { name: "Settings", href: "/settings", icon: Settings },
+  ];
 
   const getInitials = (name?: string) => {
     if (!name) return "U";
     return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
   };
+
+  const getRoleBadge = () => {
+    if (role === 'master') return { text: 'Master', variant: 'default' as const };
+    if (role === 'admin') return { text: 'Admin', variant: 'secondary' as const };
+    return { text: 'User', variant: 'outline' as const };
+  };
+
+  const roleBadge = getRoleBadge();
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
@@ -37,6 +49,11 @@ export default function Sidebar() {
 
       <nav className="flex-1 p-4 space-y-1">
         {navigation.map((item) => {
+          // Hide Create link for regular users
+          if (item.adminOnly && role === 'user') {
+            return null;
+          }
+
           const isActive = location.pathname === item.href;
           return (
             <Link
@@ -57,7 +74,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border space-y-2">
-        <div className="flex items-center gap-3 px-3 py-2">
+        <Link
+          to="/profile"
+          className="flex items-center gap-3 px-3 py-2 hover:bg-sidebar-accent/50 rounded-lg transition-colors"
+        >
           <Avatar className="w-8 h-8">
             <AvatarImage src={user?.user_metadata?.avatar_url} />
             <AvatarFallback className="bg-primary text-primary-foreground text-xs">
@@ -65,14 +85,19 @@ export default function Sidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">
-              {user?.user_metadata?.full_name || user?.email?.split("@")[0]}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium text-sidebar-foreground truncate">
+                {user?.user_metadata?.full_name || user?.email?.split("@")[0]}
+              </p>
+              <Badge variant={roleBadge.variant} className="text-xs">
+                {roleBadge.text}
+              </Badge>
+            </div>
             <p className="text-xs text-sidebar-foreground/60 truncate">
               {user?.email}
             </p>
           </div>
-        </div>
+        </Link>
         <Button
           variant="ghost"
           size="sm"

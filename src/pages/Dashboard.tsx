@@ -27,7 +27,14 @@ export default function Dashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("announcements")
-        .select("*")
+        .select(`
+          *,
+          profiles (
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq("archived", false)
         .order("created_at", { ascending: false });
 
       if (error) throw error;

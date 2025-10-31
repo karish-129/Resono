@@ -2,3 +2,9 @@ project_id = "bwowiclyjxsccovrkplt"
 
 [functions.analyze-announcement]
 verify_jwt = false
+
+[functions.verify-role-password]
+verify_jwt = true
+
+[functions.archive-expired-announcements]
+verify_jwt = false

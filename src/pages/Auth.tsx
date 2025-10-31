@@ -11,7 +11,7 @@ export default function Auth() {
 
   useEffect(() => {
     if (user && !loading) {
-      navigate("/");
+      navigate("/role-selection");
     }
   }, [user, loading, navigate]);
 

@@ -12,6 +12,9 @@ import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import RoleSelection from "./pages/RoleSelection";
+import ProfileSettings from "./pages/ProfileSettings";
+import ArchivedAnnouncements from "./pages/ArchivedAnnouncements";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +41,14 @@ function AppRoutes() {
     <>
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route
+          path="/role-selection"
+          element={
+            <ProtectedRoute>
+              <RoleSelection />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/"
           element={
@@ -80,6 +91,22 @@ function AppRoutes() {
             <ProtectedRoute>
               <Sidebar />
               <Settings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfileSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/archived"
+          element={
+            <ProtectedRoute>
+              <ArchivedAnnouncements />
             </ProtectedRoute>
           }
         />

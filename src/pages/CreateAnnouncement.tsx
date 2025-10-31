@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useRole } from "@/hooks/useRole";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,18 +17,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sparkles, Upload, X, FileText, Loader2 } from "lucide-react";
+import { Sparkles, Upload, X, FileText, Loader2, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CreateAnnouncement() {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { role, loading: roleLoading } = useRole();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!roleLoading && role === 'user') {
+      toast({
+        title: "Access Denied",
+        description: "Only Admins and Masters can publish notices.",
+        variant: "destructive",
+      });
+      navigate("/");
+    }
+  }, [role, roleLoading, navigate, toast]);
   
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [department, setDepartment] = useState("");
+  const [deadline, setDeadline] = useState("");
   const [aiSummary, setAiSummary] = useState("");
   const [aiCategory, setAiCategory] = useState("");
   const [aiPriority, setAiPriority] = useState<"high" | "medium" | "low">("medium");
@@ -41,6 +55,7 @@ export default function CreateAnnouncement() {
       title: string;
       content: string;
       department: string;
+      deadline?: string;
       summary: string;
       category: string;
       priority: "high" | "medium" | "low";
@@ -55,6 +70,7 @@ export default function CreateAnnouncement() {
           title: data.title,
           content: data.content,
           department: data.department,
+          deadline: data.deadline || null,
           summary: data.summary,
           category: data.category,
           priority: data.priority,
@@ -206,6 +222,7 @@ export default function CreateAnnouncement() {
         title,
         content,
         department,
+        deadline: deadline || undefined,
         summary: aiSummary || content.substring(0, 150) + "...",
         category: aiCategory,
         priority: aiPriority,
@@ -219,6 +236,33 @@ export default function CreateAnnouncement() {
       });
     }
   };
+
+  if (roleLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="ml-64 p-8 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (role === 'user') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="ml-64 p-8">
+          <div className="max-w-2xl mx-auto text-center py-12">
+            <ShieldAlert className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h1 className="text-2xl font-bold mb-2">Access Restricted</h1>
+            <p className="text-muted-foreground mb-6">
+              Only Admins and Masters can publish notices.
+            </p>
+            <Button onClick={() => navigate("/")}>Return to Dashboard</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -271,6 +315,20 @@ export default function CreateAnnouncement() {
                       <SelectItem value="it">IT</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="deadline">Deadline (Optional)</Label>
+                  <Input
+                    id="deadline"
+                    type="datetime-local"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                    placeholder="Set announcement deadline"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Announcements will be archived after this date
+                  </p>
                 </div>
 
                 <div className="space-y-2">

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Calendar, Tag, TrendingUp, Building2, Sparkles, FileText, Download } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, TrendingUp, Building2, Sparkles, FileText, Download, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const priorityConfig = {
@@ -32,7 +32,14 @@ export default function AnnouncementDetail() {
       
       const { data, error } = await supabase
         .from("announcements")
-        .select("*")
+        .select(`
+          *,
+          profiles (
+            full_name,
+            avatar_url,
+            email
+          )
+        `)
         .eq("id", id)
         .single();
 
@@ -108,6 +115,17 @@ export default function AnnouncementDetail() {
                     <Building2 className="w-4 h-4" />
                     <Badge variant="secondary">{announcement.department}</Badge>
                   </div>
+                  {(() => {
+                    const profile = announcement.profiles as any;
+                    return profile && typeof profile === 'object' && profile !== null && 'full_name' in profile && (
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        <span className="font-medium text-foreground">
+                          Posted by {profile.full_name || profile.email}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
