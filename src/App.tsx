@@ -17,6 +17,7 @@ import RoleSelection from "./pages/RoleSelection";
 import ProfileSettings from "./pages/ProfileSettings";
 import ArchivedAnnouncements from "./pages/ArchivedAnnouncements";
 import UserProfile from "./pages/UserProfile";
+import Users from "./pages/Users";
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,15 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Sidebar />
+              <Users />
             </ProtectedRoute>
           }
         />
