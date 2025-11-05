@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Plus, Settings, BarChart3, Bell, LogOut, User, Archive } from "lucide-react";
+import { Home, Plus, Settings, BarChart3, Bell, LogOut, User, Archive, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
@@ -17,6 +17,7 @@ export default function Sidebar() {
     { name: "Create", href: "/create", icon: Plus, adminOnly: true },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Archived", href: "/archived", icon: Archive },
+    { name: "User Profile", href: "/user-profile", icon: UserCircle },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 

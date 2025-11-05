@@ -8,9 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, Lock, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useRole } from "@/hooks/useRole";
 
 export default function RoleSelection() {
   const { user } = useAuth();
+  const { role, loading: roleLoading } = useRole();
   const [selectedRole, setSelectedRole] = useState<'master' | 'admin' | 'user' | null>(null);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,17 +22,46 @@ export default function RoleSelection() {
   useEffect(() => {
     if (!user) {
       navigate("/auth");
+      return;
     }
-  }, [user, navigate]);
+    
+    // If user already has a role, redirect to dashboard
+    if (role && !roleLoading) {
+      navigate("/");
+    }
+  }, [user, role, roleLoading, navigate]);
 
   const handleRoleSelection = async () => {
     if (!selectedRole) {
       return;
     }
 
-    // If user role selected, just navigate without password
+    // If user role selected, insert it into database
     if (selectedRole === 'user') {
-      navigate("/");
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('verify-role-password', {
+          body: { password: '', requestedRole: 'user' }
+        });
+
+        if (error) throw error;
+
+        if (data.success) {
+          toast({
+            title: "Welcome!",
+            description: "You have been registered as a user.",
+          });
+          navigate("/");
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -66,12 +97,20 @@ export default function RoleSelection() {
     }
   };
 
+  if (roleLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Select Your Role</h1>
-          <p className="text-muted-foreground">Choose your access level for Resona</p>
+          <p className="text-muted-foreground">Choose your access level for Resono</p>
         </div>
 
         <div className="space-y-4">

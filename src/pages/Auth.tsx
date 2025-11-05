@@ -11,6 +11,7 @@ export default function Auth() {
 
   useEffect(() => {
     if (user && !loading) {
+      // Always go to role selection first - they'll be redirected if they already have a role
       navigate("/role-selection");
     }
   }, [user, loading, navigate]);

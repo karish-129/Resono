@@ -43,6 +43,10 @@ Deno.serve(async (req) => {
     } else if (requestedRole === 'admin' && password === '421421') {
       isValid = true;
       roleToAssign = 'admin';
+    } else if (requestedRole === 'user') {
+      // User role doesn't require a password
+      isValid = true;
+      roleToAssign = 'user';
     }
 
     if (!isValid) {
