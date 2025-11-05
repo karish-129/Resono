@@ -6,12 +6,12 @@ export type UserRole = 'master' | 'admin' | 'user';
 
 export function useRole() {
   const { user } = useAuth();
-  const [role, setRole] = useState<UserRole>('user');
+  const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
-      setRole('user');
+      setRole(null);
       setLoading(false);
       return;
     }
@@ -27,14 +27,19 @@ export function useRole() {
           .single();
 
         if (error) {
-          console.error('Error fetching role:', error);
-          setRole('user');
+          // If no role found (PGRST116), set to null
+          if (error.code === 'PGRST116') {
+            setRole(null);
+          } else {
+            console.error('Error fetching role:', error);
+            setRole(null);
+          }
         } else if (data) {
           setRole(data.role as UserRole);
         }
       } catch (error) {
         console.error('Error:', error);
-        setRole('user');
+        setRole(null);
       } finally {
         setLoading(false);
       }
